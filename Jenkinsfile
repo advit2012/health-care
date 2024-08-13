@@ -9,8 +9,7 @@ pipeline {
         }
       stage('Docker insatll and start') {
             steps {
-                
-              
+               ansiblePlaybook become: true, credentialsId: 'ansible', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml', sudoUser: null, vaultTmpPath: '' 
             }
         }
         stage('Build Docker image') {
