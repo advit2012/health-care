@@ -29,7 +29,6 @@ pipeline {
         }
         
         stage('Deploy to K8s') {
-            when { branch 'master' }
             steps {
                 script {
                     echo 'Deploying to Kubernetes...'
