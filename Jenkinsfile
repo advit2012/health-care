@@ -1,5 +1,5 @@
 pipeline {
-    agent { label 'manjeet' } // All stages will run on the 'manjeet' slave node
+    agent any
     stages {
         stage('Build Maven') {
             steps {
