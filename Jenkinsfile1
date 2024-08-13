@@ -34,7 +34,7 @@ pipeline {
                 script {
                     // Ensure the path to deployment.yaml is correct
                     sh 'ls -la' // Debug step to list files and confirm path
-                    sh 'kubectl apply -f k8s/deployment.yaml'
+                    sh 'kubectl apply -f deployment.yaml'
                 }
             }
         }
