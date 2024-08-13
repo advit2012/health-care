@@ -1,39 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: manjeet
+  name: advit
 spec:
   selector:
     matchLabels:
-      app: spring-boot
+      app: spring
   replicas: 2
   template:
     metadata:
       labels:
-        app: spring-boot
+        app: spring
     spec:
       containers:
-        - name: spring-boot
+        - name: spring
           image: advit2012/healthcare13aug:v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082
-          resources:
-            requests:
-              memory: "512Mi"
-              cpu: "500m"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8082
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8082
-            initialDelaySeconds: 30
-            periodSeconds: 10
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-k8s
+spec:
+  selector:
+    app: spring
+  ports:
+    - protocol: "TCP"
+      port: 8082
+      targetPort: 8082
+  type: NodePort
