@@ -1,48 +1,77 @@
- }
-  agent any
-  stages {
-    stage('Cloning Git') {
-      steps {
-        git url: 'https://github.com/advit2012/health-care/', branch: 'master'
+ pipeline {
+    agent any
+    stages {
+        stage('Cloning Git') {
+            steps {
+                // Clone code from GitHub repository
+                git url: 'https://github.com/advit2012/health-care/', branch: 'master'
+
+                // Run Maven build (assuming a Maven project)
                 sh 'mvn clean install'
-      }
-    }
-    stage('Building image') {
-      steps{
-        script {
-          dockerImage = docker.build imagename
-        }
-      }
-    }
-    stage('Deploy Image') {
-      steps{
-        script {
-          docker.withRegistry( '', registryCredential ) {
-            dockerImage.push("$BUILD_NUMBER")
-             dockerImage.push('latest')
 
-          }
+                // **Error handling suggestion:**
+                //catchError {
+                //    error "Failed to clone or build the project"
+                //    // Add any cleanup steps if needed
+                //}
+            }
         }
-      }
-    }
-    stage('Deploy to K8s') {
-      steps{
-        script {
-          sh "sed -i 's,TEST_IMAGE_NAME,harshmanvar/node-web-app:$BUILD_NUMBER,' deployment.yaml"
-          sh "cat deployment.yaml"
-          sh "kubectl --kubeconfig=/home/ec2-user/config get pods"
-          sh "kubectl --kubeconfig=/home/ec2-user/config apply -f deployment.yaml"
-        }
-      }
-    }
-    
-    
-    stage('Remove Unused docker image') {
-      steps{
-        sh "docker rmi $imagename:$BUILD_NUMBER"
-         sh "docker rmi $imagename:latest"
+        stage('Building Image') {
+            steps {
+                script {
+                    // Replace 'imagename' with  name
+                    dockerImage = docker.build 'health'
 
-      }
+                    // **Error handling suggestion:**
+                    //catchError {
+                    //    error "Failed to build the Docker image"
+                    //}
+                }
+            }
+        }
+        stage('Deploy Image') {
+            steps {
+                script {
+                    docker.withRegistry('', registryCredential) {
+                        dockerImage.push("$BUILD_NUMBER")
+                        dockerImage.push('latest')
+
+                        // **Error handling suggestion:**
+                        //catchError {
+                        //    error "Failed to push the image to registry"
+                        //}
+                    }
+                }
+            }
+        }
+        stage('Deploy to K8s') {
+            steps {
+                script {
+                    sh "sed -i 's,TEST_IMAGE_NAME,health:$BUILD_NUMBER,' deployment.yaml"
+                    sh "cat deployment.yaml" // Optional: Verify deployment.yaml content
+
+                    // Optional: List pods (commented out)
+                    // sh "kubectl --kubeconfig=/home/ec2-user/config get pods"
+
+                    sh "kubectl --kubeconfig=/home/ec2-user/config apply -f deployment.yaml"
+
+                    // **Error handling suggestion:**
+                    //catchError {
+                    //    error "Failed to deploy to Kubernetes cluster"
+                    //}
+                }
+            }
+        }
+        stage('Remove Unused Docker Image') {
+            steps {
+                sh "docker rmi health:$BUILD_NUMBER"
+                sh "docker rmi health:latest"
+
+                // **Error handling suggestion:**
+                //catchError {
+                //    error "Failed to remove unused Docker images"
+                //}
+            }
+        }
     }
-  }
 }
