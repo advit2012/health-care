@@ -1,77 +1,42 @@
- pipeline {
+pipeline {
     agent any
     stages {
-        stage('Cloning Git') {
+        stage('Build Maven') {
             steps {
-                // Clone code from GitHub repository
                 git url: 'https://github.com/advit2012/health-care/', branch: 'master'
-
-                // Run Maven build (assuming a Maven project)
                 sh 'mvn clean install'
-
-                // **Error handling suggestion:**
-                //catchError {
-                //    error "Failed to clone or build the project"
-                //    // Add any cleanup steps if needed
-                //}
             }
         }
-        stage('Building Image') {
+        
+        stage('Build Docker image') {
             steps {
                 script {
-                    // Replace 'imagename' with  name
-                    dockerImage = docker.build 'health'
-
-                    // **Error handling suggestion:**
-                    //catchError {
-                    //    error "Failed to build the Docker image"
-                    //}
+                    echo 'Building Docker image...'
+                    sh 'docker build -t advit2012/healthcare14aug:v1 .'
                 }
             }
         }
-        stage('Deploy Image') {
+        
+        stage('Docker Login') {
             steps {
-                script {
-                    docker.withRegistry('', registryCredential) {
-                        dockerImage.push("$BUILD_NUMBER")
-                        dockerImage.push('latest')
-
-                        // **Error handling suggestion:**
-                        //catchError {
-                        //    error "Failed to push the image to registry"
-                        //}
-                    }
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                    echo 'Logging into Docker...'
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
                 }
+                echo 'Pushing Docker image...'
+                sh 'docker push advit2012/healthcare14aug:v1'
             }
         }
+        
         stage('Deploy to K8s') {
             steps {
                 script {
-                    sh "sed -i 's,TEST_IMAGE_NAME,health:$BUILD_NUMBER,' deployment.yaml"
-                    sh "cat deployment.yaml" // Optional: Verify deployment.yaml content
-
-                    // Optional: List pods (commented out)
-                    // sh "kubectl --kubeconfig=/home/ec2-user/config get pods"
-
-                    sh "kubectl --kubeconfig=/home/ec2-user/config apply -f deployment.yaml"
-
-                    // **Error handling suggestion:**
-                    //catchError {
-                    //    error "Failed to deploy to Kubernetes cluster"
-                    //}
+                    withKubeConfig([credentialsId: 'k8sconfigpwd']) {
+                        sh 'kubectl apply -f deploymentservice.yaml'
                 }
-            }
-        }
-        stage('Remove Unused Docker Image') {
-            steps {
-                sh "docker rmi health:$BUILD_NUMBER"
-                sh "docker rmi health:latest"
-
-                // **Error handling suggestion:**
-                //catchError {
-                //    error "Failed to remove unused Docker images"
-                //}
             }
         }
     }
 }
+ 
+      
