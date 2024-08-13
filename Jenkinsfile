@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
-                    sh 'docker build -t advit2012/healthcare13aug:v1 .'
+                    sh 'docker build -t advit2012/healthcare14aug:v1 .'
                 }
             }
         }
@@ -24,7 +24,7 @@ pipeline {
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
                 }
                 echo 'Pushing Docker image...'
-                sh 'docker push advit2012/healthcare13aug:v1'
+                sh 'docker push advit2012/healthcare14aug:v1'
             }
         }
         
