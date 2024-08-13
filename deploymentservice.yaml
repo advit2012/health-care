@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: spring-boot-k8s
-          image: advit2012/health14aug:v1 # Image that will be used to containers in the cluster
+          image: advit2012/healthcare14aug:v1 # Image that will be used to containers in the cluster
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8082 # The port that the container is running on in the cluster
