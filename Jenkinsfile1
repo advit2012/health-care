@@ -1,10 +1,12 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Build Maven') {
             steps {
+                // Checkout the code from the repository
                 git url: 'https://github.com/advit2012/health-care/', branch: 'master'
+                // Build the project using Maven
                 sh 'mvn clean install'
             }
         }
@@ -13,6 +15,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building Docker image...'
+                    // Build Docker image and tag it
                     sh 'docker build -t advit2012/healthcare14aug:v1 .'
                 }
             }
@@ -22,9 +25,11 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-pwd', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
                     echo 'Logging into Docker...'
+                    // Login to Docker Hub
                     sh 'echo $PASS | docker login -u $USER --password-stdin'
                 }
                 echo 'Pushing Docker image...'
+                // Push Docker image to Docker Hub
                 sh 'docker push advit2012/healthcare14aug:v1'
             }
         }
@@ -32,11 +37,10 @@ pipeline {
         stage('Deploy to K8s') {
             steps {
                 script {
-                   sh 'kubectl apply -f deployment.yaml'
-                    }
+                    // Apply the Kubernetes deployment configuration
+                    sh 'kubectl apply -f deployment.yaml'
                 }
             }
         }
     }
 }
-     
