@@ -29,11 +29,18 @@ pipeline {
             }
         }
         
+        stage('Rename Deployment File') {
+            steps {
+                script {
+                    sh 'mv deplyoment.yaml deployment.yaml'
+                }
+            }
+        }
+
         stage('Deploy to K8s') {
             steps {
                 script {
-                    // Ensure the path to deployment.yaml is correct
-                    sh 'ls -la' // Debug step to list files and confirm path
+                    // Apply the Kubernetes deployment configuration
                     sh 'kubectl apply -f deployment.yaml'
                 }
             }
