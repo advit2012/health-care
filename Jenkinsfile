@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to Kubernetes...'
-                       sh "kubectl --kubeconfig=/path/to/kubeconfig apply -f deploymentservice.yaml"
+                       kubernetesDeploy (configs: 'deploymentservice.yaml' ,kubeconfigId: 'k8sconfigpwd')
                 }
             }
         }
