@@ -32,7 +32,7 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to Kubernetes...'
-                       kubernetesDeploy (configs: 'deplyoment.yaml' ,kubeconfigId: 'k8sconfigpwd')
+                       kubernetesDeploy (configs: 'deploymentservice.yaml' ,kubeconfigId: 'k8sconfigpwd')
                 }
             }
         }
