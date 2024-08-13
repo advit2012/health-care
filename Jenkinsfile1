@@ -1,5 +1,6 @@
 pipeline {
     agent any
+    
     stages {
         stage('Build Maven') {
             steps {
@@ -32,11 +33,11 @@ pipeline {
             steps {
                 script {
                     withKubeConfig([credentialsId: 'k8sconfigpwd']) {
-                        sh 'kubectl apply -f deplyoment.yaml'
+                        sh 'kubectl apply -f deployment.yaml'
+                    }
                 }
             }
         }
     }
 }
- 
-      
+     
