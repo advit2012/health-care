@@ -8,8 +8,6 @@
 
   - name : Install maven
     command : apt insatll maven -y
-    become : yes
-    become_user : root
-
+   
  
 
