@@ -10,13 +10,7 @@ pipeline {
        
         stage('Deployment Using Ansible') {
             steps {
-                ansiblePlaybook(
-                    become: true, 
-                    credentialsId: 'ansible', 
-                    disableHostKeyChecking: true, 
-                    installation: 'ansible', 
-                    playbook: 'ansible-playbook.yml', 
-                    vaultTmpPath: ''
+                ansiblePlaybook become: true, credentialsId: 'ansible', disableHostKeyChecking: true, installation: 'ansible', playbook: 'ansible-playbook.yml', sudoUser: null, vaultTmpPath: ''
                 )
             }
         }
