@@ -29,14 +29,6 @@ pipeline {
             }
         }
         
-        stage('Rename Deployment File') {
-            steps {
-                script {
-                    sh 'mv deployment.yaml deployment.yaml'
-                }
-            }
-        }
-
         stage('Deploy to K8s') {
             steps {
                 withCredentials([file(credentialsId: 'kub', variable: 'KUBECONFIG')]) {
