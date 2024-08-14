@@ -32,16 +32,18 @@ pipeline {
         stage('Rename Deployment File') {
             steps {
                 script {
-                    sh 'mv deplyoment.yaml deployment.yaml'
+                    sh 'mv deployment.yaml deployment.yaml'
                 }
             }
         }
 
         stage('Deploy to K8s') {
             steps {
-                script {
-                    // Apply the Kubernetes deployment configuration
-                    sh 'kubectl apply -f deployment.yaml'
+                withCredentials([file(credentialsId: 'kub', variable: 'KUBECONFIG')]) {
+                    script {
+                        // Apply the Kubernetes deployment configuration
+                        sh 'kubectl apply -f deployment.yaml'
+                    }
                 }
             }
         }
