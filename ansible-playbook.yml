@@ -7,7 +7,7 @@
     command : sudo apt-get update
 
   - name : Install maven
-    command : sudo apt insatll maven -y
+    command : apt insatll maven -y
     become : yes
     become_user : root
 
