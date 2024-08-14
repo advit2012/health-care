@@ -3,11 +3,9 @@
   become: true
   connection : ssh
   tasks : 
-  - name: updating apt
-    command : sudo apt-get update
+  - name: install maven
+    command : apt install maven
 
-  - name : Install maven
-    command : apt insatll maven -y
-   
+
  
 
