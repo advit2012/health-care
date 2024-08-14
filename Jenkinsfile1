@@ -1,15 +1,22 @@
 pipeline {
     agent any
     stages {
+        stage('Checkout Code from GitHub') {
+            steps {
+                git url: 'https://github.com/advit2012/health-care.git'
+                echo 'GitHub URL checked out'
+            }
+        }
+       
         stage('Deployment Using Ansible') {
             steps {
                 ansiblePlaybook(
-                    become: true,
-                    credentialsId: 'ansible',
-                    disableHostKeyChecking: true,
-                    installation: 'ansible',
-                    inventory: '/etc/ansible/hosts',
-                    playbook: 'ansible-playbook.yml'
+                    become: true, 
+                    credentialsId: 'ansible', 
+                    disableHostKeyChecking: true, 
+                    installation: 'ansible', 
+                    playbook: 'ansible-playbook.yml', 
+                    vaultTmpPath: ''
                 )
             }
         }
