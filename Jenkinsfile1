@@ -10,10 +10,18 @@ pipeline {
        
         stage('Deployment Using Ansible') {
             steps {
-                ansiblePlaybook become: true, credentialsId: 'ansible', disableHostKeyChecking: true, installation: 'ansible', playbook: 'ansible-playbook.yml', sudoUser: null, vaultTmpPath: ''
+                ansiblePlaybook(
+                    become: true, 
+                    credentialsId: 'ansible', 
+                    disableHostKeyChecking: true, 
+                    installation: 'ansible', 
+                    playbook: 'ansible-playbook.yml', 
+                    sudoUser: null, 
+                    vaultTmpPath: ''
                 )
             }
         }
+        
         stage('Build Docker image') {
             steps {
                 script {
@@ -39,7 +47,10 @@ pipeline {
             steps {
                 script {
                     echo 'Deploying to Kubernetes...'
-                    kubernetesDeploy (configs: 'deploymentservice.yaml' ,kubeconfigId: 'kubecr')
+                    kubernetesDeploy(
+                        configs: 'deploymentservice.yaml', 
+                        kubeconfigId: 'kubecr'
+                    )
                 }
             }
         }
