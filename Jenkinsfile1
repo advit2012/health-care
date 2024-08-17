@@ -8,7 +8,11 @@ pipeline {
                      sh 'mvn clean install'
             }
         }
-
+          stage('Docker Using Ansible') {
+            steps {
+                ansiblePlaybook become: true, credentialsId: 'ansible1', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml', sudoUser: null, vaultTmpPath: ''
+            }
+        }
         stage('Build Docker image') {
             steps {
                 script {
