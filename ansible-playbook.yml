@@ -1,5 +1,5 @@
 ---
-- hosts: ansible
+- hosts: docker-hosts
   become: yes
   vars:
     docker_image_name: "myapp"
@@ -26,8 +26,9 @@
       docker_image:
         name: "{{ docker_image_name }}"
         tag: "{{ docker_image_tag }}"
+        source: build
         build:
-          path: "{{ ansible_env.HOME }}"  # Adjust if necessary
+          path: "{{ ansible_env.HOME }}"  # Adjust this path as needed
           dockerfile: "{{ docker_file_path }}"  # Path to the Dockerfile
 
     - name: Log in to Docker registry
