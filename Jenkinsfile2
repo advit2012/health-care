@@ -5,4 +5,20 @@ pipeline {
             steps {
                 git url: 'https://github.com/advit2012/health-care.git'
                 echo 'GitHub URL checked out'
-   
+            }
+        }
+
+        stage('Docker Using Ansible') {
+            steps {
+                ansiblePlaybook(
+                    become: true,
+                    credentialsId: 'ansible',  // Make sure 'ansible' is your correct credentials ID
+                    disableHostKeyChecking: true,
+                    installation: 'ansible',   // Make sure 'ansible' is the correct Ansible installation name in Jenkins
+                    inventory: '/etc/ansible/hosts',
+                    playbook: 'ansible-playbook.yml'
+                )
+            }
+        }
+    }
+}
