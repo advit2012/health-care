@@ -1,25 +1,38 @@
 ---
-- hosts: ansible
+- hosts: all
   become: yes
   tasks:
-    - name: Remove conflicting containerd package
+    - name: Update apt cache
       apt:
-        name: containerd
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Remove conflicting containerd packages (if installed)
+      apt:
+        name: "{{ item }}"
         state: absent
         force: yes
-        purge: yes
+      with_items:
+        - containerd
+        - containerd.io
 
-    - name: Install Docker if not already installed
-      apt:
-        name: docker.io
-        state: present
-        update_cache: yes
+    - name: Unhold packages that might be held back
+      shell: |
+        sudo apt-mark unhold containerd
+        sudo apt-mark unhold containerd.io
+        sudo apt-mark unhold docker.io
+      ignore_errors: yes
 
-    - name: Start Docker service
-      service:
+    - name: Install Docker using official installation script
+      shell: |
+        curl -fsSL https://get.docker.com | sh
+      args:
+        executable: /bin/bash
+
+    - name: Ensure Docker is started and enabled on boot
+      systemd:
         name: docker
-        state: started
         enabled: yes
+        state: started
 
-   
 
