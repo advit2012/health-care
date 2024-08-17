@@ -1,1 +1,8 @@
-
+pipeline {
+    agent any
+    stages {
+        stage('Checkout Code from GitHub') {
+            steps {
+                git url: 'https://github.com/advit2012/health-care.git'
+                echo 'GitHub URL checked out'
+   
