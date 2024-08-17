@@ -23,28 +23,4 @@
         state: started
         enabled: yes
 
-    - name: Build the Docker image
-      docker_image:
-        name: "{{ docker_image_name }}"
-        tag: "{{ docker_image_tag }}"
-        source: build
-        build:
-          path: "{{ build_path }}"  # Path to the directory containing Dockerfile
-          dockerfile: "{{ docker_file_path }}"  # Path to Dockerfile within build path
-
-    - name: Log in to Docker registry
-      docker_login:
-        registry: "{{ docker_registry }}"
-        username: "{{ docker_username }}"
-        password: "{{ docker_password }}"
-
-    - name: Push the Docker image to the registry
-      docker_image:
-        name: "{{ docker_registry }}/{{ docker_image_name }}"
-        tag: "{{ docker_image_tag }}"
-        push: yes
-
-    - name: Log out from Docker registry
-      docker_login:
-        registry: "{{ docker_registry }}"
-        state: absent
+    
