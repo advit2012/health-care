@@ -17,14 +17,13 @@ pipeline {
         stage('Docker Using Ansible') {
             steps {
                 ansiblePlaybook(
-                    become: true, 
+                    become: true,
                     credentialsId: 'ansible', 
                     disableHostKeyChecking: true, 
                     installation: 'ansible', 
                     inventory: '/etc/ansible/hosts', 
-                    playbook: 'ansible-playbook.yml', 
-                    sudoUser: null, 
-                    vaultTmpPath: ''
+                    playbook: 'ansible-playbook.yml',
+                    extras: '--private-key=/var/lib/jenkins/workspace/project/ssh12090239417976523510.key -u jenkins'
                 )
             }
         }
