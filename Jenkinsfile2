@@ -16,16 +16,7 @@ pipeline {
 
         stage('Docker Using Ansible') {
             steps {
-                ansiblePlaybook(
-                    become: true, 
-                    credentialsId: 'ansible1', 
-                    disableHostKeyChecking: true, 
-                    installation: 'ansible', 
-                    inventory: '/etc/ansible/hosts', 
-                    playbook: 'ansible-playbook.yml', 
-                    sudoUser: null, 
-                    vaultTmpPath: ''
-                )
+                ansiblePlaybook become: true, credentialsId: 'ansible2', disableHostKeyChecking: true, installation: 'ansible', inventory: '/etc/ansible/hosts', playbook: 'ansible-playbook.yml', sudoUser: null, vaultTmpPath: ''
             }
         }
     }
