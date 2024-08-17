@@ -1,5 +1,5 @@
 ---
-- hosts: ansible
+- hosts: docker-hosts
   become: yes
   vars:
     docker_image_name: "myapp"
@@ -7,7 +7,8 @@
     docker_registry: "docker.io"
     docker_username: "advit2012"
     docker_password: "{{ docker_password | default('Manjeet123') }}"  # Secure this using Ansible Vault or Jenkins credentials
-    docker_file_path: "./Dockerfile"  # Path to Dockerfile in the GitHub directory
+    build_path: "{{ ansible_env.HOME }}"  # Adjust this path as needed
+    docker_file_path: "Dockerfile"  # Adjust if Dockerfile is in a different location
 
   tasks:
     - name: Install Docker if not already installed
@@ -28,8 +29,8 @@
         tag: "{{ docker_image_tag }}"
         source: build
         build:
-          path: "{{ ansible_env.HOME }}"  # Adjust this path as needed
-          dockerfile: "{{ docker_file_path }}"  # Path to the Dockerfile
+          path: "{{ build_path }}"  # Path to the directory containing Dockerfile
+          dockerfile: "{{ docker_file_path }}"  # Path to Dockerfile within build path
 
     - name: Log in to Docker registry
       docker_login:
