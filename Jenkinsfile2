@@ -17,12 +17,14 @@ pipeline {
         stage('Docker Using Ansible') {
             steps {
                 ansiblePlaybook(
-                    become: true,
-                    credentialsId: 'ansible',  // Make sure 'ansible' is your correct credentials ID
-                    disableHostKeyChecking: true,
-                    installation: 'ansible',   // Make sure 'ansible' is the correct Ansible installation name in Jenkins
-                    inventory: '/etc/ansible/hosts',
-                    playbook: 'ansible-playbook.yml'
+                    become: true, 
+                    credentialsId: 'ansible', 
+                    disableHostKeyChecking: true, 
+                    installation: 'ansible', 
+                    inventory: '/etc/ansible/hosts', 
+                    playbook: 'ansible-playbook.yml', 
+                    sudoUser: null, 
+                    vaultTmpPath: ''
                 )
             }
         }
