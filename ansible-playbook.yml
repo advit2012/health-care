@@ -8,7 +8,7 @@
     docker_username: "advit2012"
     docker_password: "{{ docker_password | default('Manjeet123') }}"  # Secure this using Ansible Vault or Jenkins credentials
     build_path: "{{ ansible_env.HOME }}"  # Adjust this path as needed
-    docker_file_path: "/var/lib/jenkins/workspace/project"  # Adjust if Dockerfile is in a different location
+    docker_file_path: "./docker"  # Adjust if Dockerfile is in a different location
 
   tasks:
     - name: Install Docker if not already installed
