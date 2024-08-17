@@ -2,6 +2,13 @@
 - hosts: ansible
   become: yes
   tasks:
+    - name: Remove conflicting containerd package
+      apt:
+        name: containerd
+        state: absent
+        force: yes
+        purge: yes
+
     - name: Install Docker if not already installed
       apt:
         name: docker.io
@@ -13,5 +20,6 @@
         name: docker
         state: started
         enabled: yes
-        
-    
+
+   
+
