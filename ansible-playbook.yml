@@ -3,12 +3,38 @@
   become: yes
   tasks:
 
-    - name: Install Docker
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Remove conflicting containerd packages (if installed)
+      apt:
+        name: "{{ item }}"
+        state: absent
+        force: yes
+      with_items:
+        - containerd
+        - containerd.io
+
+    - name: Unhold packages that might be held back
       shell: |
-        wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installDocker.sh -P /tmp
-        chmod 755 /tmp/installDocker.sh
-        bash /tmp/installDocker.sh
-        systemctl restart docker.service
+        sudo apt-mark unhold containerd
+        sudo apt-mark unhold containerd.io
+        sudo apt-mark unhold docker.io
+      ignore_errors: yes
+
+    - name: Install Docker using official installation script
+      shell: |
+        curl -fsSL https://get.docker.com | sh
+      args:
+        executable: /bin/bash
+
+    - name: Ensure Docker is started and enabled on boot
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
 
     - name: Install CRI-Docker
       shell: |
