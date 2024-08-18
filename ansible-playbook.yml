@@ -2,48 +2,44 @@
 - hosts: all
   become: yes
   tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
 
-    - name: Remove conflicting containerd packages (if installed)
-      apt:
-        name: "{{ item }}"
-        state: absent
-        force: yes
-      with_items:
-        - containerd
-        - containerd.io
-
-    - name: Unhold packages that might be held back
+    - name: Install Docker
       shell: |
-        sudo apt-mark unhold containerd
-        sudo apt-mark unhold containerd.io
-        sudo apt-mark unhold docker.io
-      ignore_errors: yes
+        wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installDocker.sh -P /tmp
+        chmod 755 /tmp/installDocker.sh
+        bash /tmp/installDocker.sh
+        systemctl restart docker.service
 
-    - name: Install Docker using official installation script
+    - name: Install CRI-Docker
       shell: |
-        curl -fsSL https://get.docker.com | sh
-      args:
-        executable: /bin/bash
+        wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installCRIDockerd.sh -P /tmp
+        chmod 755 /tmp/installCRIDockerd.sh
+        bash /tmp/installCRIDockerd.sh
+        systemctl restart cri-docker.service
 
-    - name: Ensure Docker is started and enabled on boot
-      systemd:
-        name: docker
-        enabled: yes
-        state: started
+    - name: Install Kubernetes
+      shell: |
+        wget https://raw.githubusercontent.com/lerndevops/labs/master/scripts/installK8S.sh -P /tmp
+        chmod 755 /tmp/installK8S.sh
+        bash /tmp/installK8S.sh
 
-     
+    - name: Initialize Kubernetes Master Node
+      shell: |
+        kubeadm init --cri-socket unix:///var/run/cri-dockerd.sock --ignore-preflight-errors=all
+        mkdir -p $HOME/.kube
+        cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+        chown $(id -u):$(id -g) $HOME/.kube/config
+      register: kubeadm_init
 
+    - name: Install Calico Networking Driver
+      shell: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/calico.yaml
 
+    - name: Save kubeadm join command
+      shell: kubeadm token create --print-join-command
+      register: join_command
 
-
-
-
-
-
-
-
-
+    - name: Save join command to file
+      copy:
+        content: "{{ join_command.stdout }}"
+        dest: /tmp/kubeadm-join.sh
+        mode: '0755'
